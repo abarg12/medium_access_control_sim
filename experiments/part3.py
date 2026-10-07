@@ -30,7 +30,7 @@ def run(n: int = config.OFDMA_COMPARISON_N) -> list[dict]:
 
 
 def plot(rows: list[dict], key: str, ylabel: str, name: str, log: bool = False) -> None:
-    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    fig, ax = plt.subplots(figsize=(7, 5))
     for method in METHODS:
         ax.plot(config.AGGREGATE_LOADS, series(rows, key, method=method), label=method, **plotting.STYLES[method])
     ax.set_xlabel(r"Aggregate load $\Lambda$ (frames/sec)")
@@ -38,7 +38,7 @@ def plot(rows: list[dict], key: str, ylabel: str, name: str, log: bool = False) 
     ax.set_ylabel(ylabel)
     if log:
         ax.set_yscale("log")
-    ax.legend(fontsize=10)
+    ax.legend(fontsize=11)
     plotting.save(fig, name)
 
 

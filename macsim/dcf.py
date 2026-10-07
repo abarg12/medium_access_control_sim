@@ -94,6 +94,7 @@ class _DcfSim:
             attempts=[st.attempts for st in self.stations],
             collisions=[st.collisions for st in self.stations],
             delays=[st.delays for st in self.stations],
+            backoffs=[st.backoff_draws for st in self.stations],
             trace=self.trace or [],
         )
 

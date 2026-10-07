@@ -38,6 +38,7 @@ def test_collision_between_a_and_b():
     assert r.collisions == [1, 1]
     assert r.successes == [1, 1]
     assert r.delays == [[216], [327]]
+    assert r.backoffs == [[3, 1], [3, 6]]
 
 
 def test_rts_collision_hidden_terminals():

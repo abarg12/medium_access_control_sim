@@ -5,7 +5,14 @@ import pytest
 
 from macsim import config
 from macsim.dcf import Topology, simulate_dcf
-from macsim.metrics import Results, collision_probability, jain_fairness, network_throughput_mbps
+from macsim.metrics import (
+    Results,
+    collision_probability,
+    jain_fairness,
+    mean_delay_ms,
+    network_throughput_mbps,
+    station_throughputs_mbps,
+)
 from macsim.ofdma import simulate_ofdma
 from macsim.traffic import poisson_arrivals
 
@@ -39,6 +46,22 @@ def test_light_load_delivers_offered_traffic():
     r = simulate_dcf(5, 20, seed=0)
     offered_mbps = 5 * 20 * config.DATA_FRAME_BITS / 1e6
     assert network_throughput_mbps(r) == pytest.approx(offered_mbps, rel=0.1)
+
+
+@pytest.mark.parametrize("topology", list(Topology))
+@pytest.mark.parametrize("rts_cts", [False, True])
+def test_unsaturated_stations_each_deliver_offered_load(topology, rts_cts):
+    # lambda = 100 frames/sec * 12,000 bits = 1.2 Mbps per station, far below capacity.
+    r = simulate_dcf(2, 100, topology=topology, rts_cts=rts_cts, seed=0)
+    assert station_throughputs_mbps(r) == pytest.approx([1.2, 1.2], rel=0.1)
+
+
+def test_saturated_stations_deliver_less_with_longer_delay():
+    # lambda = 1000 frames/sec offers 12 Mbps per station: queues build up.
+    light = simulate_dcf(2, 100, seed=0)
+    heavy = simulate_dcf(2, 1000, seed=0)
+    assert all(t < 0.6 * 12 for t in station_throughputs_mbps(heavy))
+    assert mean_delay_ms(heavy) > 100 * mean_delay_ms(light)
 
 
 def test_ofdma_throughput_does_not_exceed_channel_capacity():

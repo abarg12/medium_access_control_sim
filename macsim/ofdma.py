@@ -70,4 +70,5 @@ def simulate_ofdma(
         attempts=[st.attempts for st in stations],
         collisions=[0] * num_stations,
         delays=[st.delays for st in stations],
+        backoffs=[st.backoff_draws for st in stations],
     )

@@ -41,6 +41,11 @@ OFDMA_COMPARISON_N = 20
 # choice in the report.
 OFDMA_OVERHEAD_SLOTS = RTS_SLOTS + SIFS_SLOTS
 
+# --- Reporting ---
+# A curve is marked saturated at the first offered load where throughput falls
+# below this fraction of the offered load.
+SATURATION_FRACTION = 0.95
+
 # --- Reproducibility ---
 DEFAULT_SEED = 0
 NUM_RUNS = 5  # independent runs to average per data point

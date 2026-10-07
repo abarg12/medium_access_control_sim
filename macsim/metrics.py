@@ -16,7 +16,13 @@ class Results:
     attempts: list[int] = field(default_factory=list)
     collisions: list[int] = field(default_factory=list)
     delays: list[list[float]] = field(default_factory=list)  # slots, per station
+    backoffs: list[list[int]] = field(default_factory=list)  # drawn backoff values, per station
     trace: list[tuple] = field(default_factory=list)  # (slot, node, event), if requested
+
+
+def offered_load_mbps(rate: float) -> float:
+    """Offered load, in Mbps, of an arrival rate in frames/sec."""
+    return rate * config.DATA_FRAME_BITS / 1e6
 
 
 def station_throughputs_mbps(results: Results) -> list[float]:
@@ -34,6 +40,16 @@ def collision_probability(results: Results) -> float:
     """Collided attempts / total transmission attempts (Eq. 3)."""
     attempts = sum(results.attempts)
     return sum(results.collisions) / attempts if attempts else 0.0
+
+
+def station_collision_probabilities(results: Results) -> list[float]:
+    """Collided attempts / transmission attempts for each station."""
+    return [c / a if a else 0.0 for c, a in zip(results.collisions, results.attempts)]
+
+
+def station_mean_backoffs(results: Results) -> list[float]:
+    """Mean drawn backoff value, in slots, for each station."""
+    return [float(np.mean(b)) if len(b) else float("nan") for b in results.backoffs]
 
 
 def _all_delays_ms(results: Results) -> np.ndarray:
@@ -65,6 +81,8 @@ def summarize(results: Results) -> dict:
         "station_throughputs_mbps": throughputs,
         "throughput_mbps": sum(throughputs),
         "collision_probability": collision_probability(results),
+        "station_collision_probabilities": station_collision_probabilities(results),
+        "station_mean_backoffs": station_mean_backoffs(results),
         "mean_delay_ms": mean_delay_ms(results),
         "p95_delay_ms": p95_delay_ms(results),
         "jain_fairness": jain_fairness(throughputs),

@@ -12,7 +12,7 @@ macsim/            simulator package
   station.py       per-station state
   dcf.py           CSMA/CA, with optional RTS/CTS and hidden terminals
   ofdma.py         round-robin OFDMA scheduler
-  metrics.py       throughput, collision probability, delay, Jain's index
+  metrics.py       throughput, collision probability, delay, backoff, Jain's index
   plotting.py      shared figure style
 experiments/       one script per project part; each writes its plots to figures/
 tests/             deterministic verification cases
@@ -29,6 +29,8 @@ results/           generated CSV tables behind the plots
 - A frame is decoded only if nothing else the receiver can hear, and no transmission of its own, overlaps it. A hidden station that is sending its own RTS while the AP sends a CTS therefore misses the NAV.
 - An OFDMA opportunity lasts `overhead + K * 100 + SIFS + ACK` slots, where the overhead is a 2-slot trigger frame plus SIFS (`OFDMA_OVERHEAD_SLOTS`). OFDMA has no contention, so the AP starts an opportunity as soon as any station has a frame.
 - Each data point is the average of `NUM_RUNS` (5) independent seeds.
+- Each station records its attempts, successes, collisions, per-frame delays, and every backoff value it draws. `results/part1.csv` reports the per-station collision probability and mean drawn backoff.
+- In the Part I throughput figures, a curve is labeled "saturated" at the first sampled load where throughput falls below `SATURATION_FRACTION` (95%) of the offered load, so the true saturation point lies between that load and the previous one.
 
 ## Setup
 
@@ -41,7 +43,7 @@ pip install -r requirements.txt
 ## Usage
 
 ```
-python -m experiments.part1   # two-station CSMA/CA and RTS/CTS
+python -m experiments.part1   # two-station CSMA/CA and RTS/CTS (also A-versus-B throughput and delay)
 python -m experiments.part2   # dense DCF
 python -m experiments.part3   # DCF versus OFDMA
 pytest                        # verification cases

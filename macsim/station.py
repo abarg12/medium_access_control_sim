@@ -17,6 +17,7 @@ class Station:
     collisions: int = 0
     successes: int = 0
     delays: list = field(default_factory=list)  # t_ACK - t_arrival per delivered frame, in slots
+    backoff_draws: list = field(default_factory=list)  # every backoff value drawn, in slots
 
     # Backoff values used before falling back to random draws (deterministic tests).
     preset_backoffs: deque = field(default_factory=deque)
@@ -35,6 +36,7 @@ class Station:
             self.backoff = self.preset_backoffs.popleft()
         else:
             self.backoff = int(rng.integers(0, self.cw))
+        self.backoff_draws.append(self.backoff)
 
     def on_collision(self, rng) -> None:
         """Binary exponential backoff: CW = min(2^k * CW0, CW_MAX)."""

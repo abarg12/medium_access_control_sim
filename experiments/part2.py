@@ -41,24 +41,24 @@ def main() -> None:
     rows = run()
     write_csv("part2", rows)
 
-    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    fig, ax = plt.subplots(figsize=(7, 5))
     plot_vs_n(ax, rows, "throughput_mbps", r"$T_\mathrm{network}$ (Mbps)")
     ax.set_ylim(bottom=0)
     plotting.save(fig, "part2_throughput")
 
-    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    fig, ax = plt.subplots(figsize=(7, 5))
     plot_vs_n(ax, rows, "collision_probability", r"$P_\mathrm{collision}$")
     ax.set_ylim(bottom=0)
     plotting.save(fig, "part2_collision")
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
     plot_vs_n(axes[0], rows, "mean_delay_ms", "Mean packet delay (ms)")
     plot_vs_n(axes[1], rows, "p95_delay_ms", "95th-percentile packet delay (ms)")
     axes[0].set_yscale("log")
     axes[1].tick_params(labelleft=True)
     plotting.save(fig, "part2_delay")
 
-    fig, ax = plt.subplots(figsize=(6.5, 4.5))
+    fig, ax = plt.subplots(figsize=(7, 5))
     plot_vs_n(ax, rows, "jain_fairness", "Jain's fairness index $J$")
     ax.set_ylim(0, 1.05)
     plotting.save(fig, "part2_fairness")
